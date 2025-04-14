@@ -1,0 +1,35 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jornada do Jovem Profissional</title>
+  <link rel="stylesheet" href="/game_style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>Jornada do Jovem Profissional</h1>
+
+    <div class="personagem-info">
+      <p><strong>Nome:</strong> <span id="nome">Lucas</span></p>
+      <p><strong>Responsabilidade:</strong> <span id="resp">50</span></p>
+      <p><strong>Pontualidade:</strong> <span id="pont">50</span></p>
+      <p><strong>Comunicação:</strong> <span id="com">50</span></p>
+      <p><strong>Desempenho:</strong> <span id="desem">50</span></p>
+    </div>
+
+    <div class="fase">
+      <h2 id="titulo-fase"></h2>
+      <p id="descricao-fase"></p>
+      <div class="escolhas">
+        <button onclick="escolher(0)" id="escolha1"></button>
+        <button onclick="escolher(1)" id="escolha2"></button>
+      </div>
+      <p id="resultado" class="resultado"></p>
+    </div>
+  </div>
+
+  <script src="/game_script.js"></script>
+</body>
+</html>
