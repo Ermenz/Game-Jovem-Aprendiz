@@ -1,18 +1,37 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jornada do Jovem Profissional</title>
   <link rel="stylesheet" href="/game_style.css">
 </head>
 <body>
-  <div class="game-container">
+
+  <!-- POP-UP da história -->
+  <div class="popup" id="popup">
+    <input type="text" id="nomeJogador" placeholder="Digite seu nome" />
+
+    <!-- Seletor de setor (só aparece no fim da história) -->
+    <select id="setorSelect" style="display: none; margin-top: 10px;">
+      <option value="">Selecione seu setor</option>
+      <option value="TI">Tecnologia da Informação</option>
+      <option value="RH">Recursos Humanos</option>
+      <option value="Logística">Logística</option>
+      <option value="Financeiro">Financeiro</option>
+      <option value="Financeiro">Marketing</option>
+    </select>
+
+    <p id="storyText">Bem-vindo! Digite seu nome e clique em Avançar.</p>
+    <button id="nextBtn">Avançar</button>
+  </div>
+
+  <!-- JOGO (inicia escondido) -->
+  <div class="game-container" id="jogo" style="display: none;">
     <h1>Jornada do Jovem Profissional</h1>
 
     <div class="personagem-info">
       <p><strong>Nome:</strong> <span id="nome">Lucas</span></p>
+      <p><strong>Setor:</strong> <span id="setorEscolhido">-</span></p>
       <p><strong>Responsabilidade:</strong> <span id="resp">50</span></p>
       <p><strong>Pontualidade:</strong> <span id="pont">50</span></p>
       <p><strong>Comunicação:</strong> <span id="com">50</span></p>
@@ -25,6 +44,8 @@
       <div class="escolhas">
         <button onclick="escolher(0)" id="escolha1"></button>
         <button onclick="escolher(1)" id="escolha2"></button>
+        <button onclick="escolher(2)" id="escolha3"></button>
+        <button onclick="escolher(3)" id="escolha4"></button>
       </div>
       <p id="resultado" class="resultado"></p>
     </div>
