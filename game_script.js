@@ -1,205 +1,272 @@
-// Atributos do jogador
-let atributos = {
-  responsabilidade: 50,
-  pontualidade: 50,
-  comunicacao: 50,
-  desempenho: 50
-};
-
-let jogador = {
-  nome: "",
-  setor: ""
-};
-
-let historia = [
-  "Bem-vindo à Jornada do Jovem Profissional!",
-  "Você está prestes a começar sua trajetória como Jovem Aprendiz.",
-  "Durante essa jornada, suas escolhas afetarão seu desenvolvimento.",
-  "Vamos começar!"
+const storyParts = [
+  "Era uma vez um jovem chamado {{nome}}...",
+  "Que buscava sua primeira oportunidade como Jovem Aprendiz.",
+  "Um dia, após muitos processos e entrevistas ele consegue o tão sonhado emprego!",
+  "Mas mal sabia que sua jornada tinha acabado de começar...",
+  "Você agora se encontra diante da primeira tarefa. Como você vai se comportar?",
+  "Com o tempo, o jovem vai crescendo no ambiente de trabalho, enfrentando os desafios diários...",
+  "E ao final, ele descobre o quão longe ele pode ir!"
 ];
 
-let indiceHistoria = 0;
-let faseAtual = 0;
-let perguntas = [];
+let currentPart = 0;
+let nomeJogador = "";
+let setorEscolhido = "";
 
-// Questões comuns
-const perguntasComuns = [
-  {
-    titulo: "Primeiro Dia",
-    descricao: "Você chegou ao trabalho e ninguém lhe explicou suas tarefas. O que você faz?",
-    opcoes: [
-      { texto: "Fica parado esperando ordens.", efeitos: { responsabilidade: -10 } },
-      { texto: "Procura alguém para perguntar.", efeitos: { comunicacao: +10 } },
-      { texto: "Explora o local e tenta entender sozinho.", efeitos: { desempenho: +10 } },
-      { texto: "Volta para casa.", efeitos: { pontualidade: -10 } }
-    ]
-  }
-];
-
-// Perguntas por setor
-const perguntasTI = [
-  {
-    titulo: "Erro no sistema",
-    descricao: "Um erro crítico apareceu no site da empresa. O que fazer?",
-    opcoes: [
-      { texto: "Ignorar, talvez alguém resolva.", efeitos: { responsabilidade: -10 } },
-      { texto: "Reportar imediatamente ao responsável.", efeitos: { comunicacao: +10 } },
-      { texto: "Tentar resolver sozinho com base no que aprendeu.", efeitos: { desempenho: +10 } },
-      { texto: "Reiniciar o servidor sem avisar ninguém.", efeitos: { pontualidade: -5, comunicacao: -5 } }
-    ]
-  }
-];
-
-const perguntasMarketing = [
-  {
-    titulo: "Campanha atrasada",
-    descricao: "Uma campanha publicitária está atrasada. O que você faz?",
-    opcoes: [
-      { texto: "Finge que não é com você.", efeitos: { responsabilidade: -10 } },
-      { texto: "Oferece ajuda para acelerar o processo.", efeitos: { responsabilidade: +10 } },
-      { texto: "Sugere ideias novas.", efeitos: { desempenho: +10 } },
-      { texto: "Reclama no grupo da equipe.", efeitos: { comunicacao: -10 } }
-    ]
-  }
-];
-
-const perguntasRH = [
-  {
-    titulo: "Conflito entre colegas",
-    descricao: "Dois colegas estão discutindo. Como você age?",
-    opcoes: [
-      { texto: "Finge que não ouviu.", efeitos: { responsabilidade: -10 } },
-      { texto: "Chama um superior.", efeitos: { comunicacao: +10 } },
-      { texto: "Conversa com ambos para acalmar.", efeitos: { desempenho: +10 } },
-      { texto: "Grava a briga e posta no grupo.", efeitos: { responsabilidade: -20 } }
-    ]
-  }
-];
-
-const perguntasLogistica = [
-  {
-    titulo: "Entrega urgente",
-    descricao: "Um pedido importante precisa sair rápido. O que fazer?",
-    opcoes: [
-      { texto: "Ignora, não é sua função.", efeitos: { responsabilidade: -10 } },
-      { texto: "Ajuda a embalar e agilizar.", efeitos: { desempenho: +10 } },
-      { texto: "Comunica o gerente da urgência.", efeitos: { comunicacao: +10 } },
-      { texto: "Faz de qualquer jeito só para entregar.", efeitos: { responsabilidade: -5 } }
-    ]
-  }
-];
-
-const perguntasFinanceiro = [
-  {
-    titulo: "Erro na planilha",
-    descricao: "Você identificou um erro na planilha financeira. O que faz?",
-    opcoes: [
-      { texto: "Deixa como está, ninguém vai notar.", efeitos: { responsabilidade: -10 } },
-      { texto: "Avisa seu supervisor imediatamente.", efeitos: { comunicacao: +10 } },
-      { texto: "Corrige e documenta o erro.", efeitos: { desempenho: +10 } },
-      { texto: "Ignora e sai mais cedo.", efeitos: { pontualidade: -10 } }
-    ]
-  }
-];
-
-// HTML Elements
-const popup = document.getElementById("popup");
+const nomeInput = document.getElementById("nomeJogador");
 const storyText = document.getElementById("storyText");
 const nextBtn = document.getElementById("nextBtn");
-const nomeInput = document.getElementById("nomeJogador");
-const setorSelect = document.getElementById("setorSelect");
-
+const popup = document.getElementById("popup");
 const jogo = document.getElementById("jogo");
 const nomeSpan = document.getElementById("nome");
 const setorSpan = document.getElementById("setorEscolhido");
-const respSpan = document.getElementById("resp");
-const pontSpan = document.getElementById("pont");
-const comSpan = document.getElementById("com");
-const desemSpan = document.getElementById("desem");
+const setorSelect = document.getElementById("setorSelect");
 
-const tituloFase = document.getElementById("titulo-fase");
-const descricaoFase = document.getElementById("descricao-fase");
-const botoes = [
-  document.getElementById("escolha1"),
-  document.getElementById("escolha2"),
-  document.getElementById("escolha3"),
-  document.getElementById("escolha4")
+const perguntasComuns = [
+  {
+    pergunta: "Como você reage a uma tarefa que nunca fez antes?",
+    opcoes: [
+      "A) Peço ajuda ao gerente",
+      "B) Tento resolver sozinho",
+      "C) Peço ajuda ao colega de setor",
+      "D) Deixo para depois"
+    ]
+  },
+  {
+    pergunta: "Como lida com prazos apertados?",
+    opcoes: [
+      "A) Foco totalmente no que precisa ser feito",
+      "B) Tento organizar meu tempo o máximo possível",
+      "C) Peço mais tempo para a entrega",
+      "D) Peço ajuda ao time"
+    ]
+  },
+  {
+    pergunta: "Você prefere trabalhar em equipe ou sozinho?",
+    opcoes: [
+      "A) Prefiro trabalhar sozinho para focar melhor",
+      "B) Gosto de trabalhar em equipe, trocando ideias",
+      "C) Depende da tarefa",
+      "D) Não tenho preferência"
+    ]
+  },
+  {
+    pergunta: "Como você se comporta em situações de pressão?",
+    opcoes: [
+      "A) Fico ansioso, mas tento dar o melhor de mim",
+      "B) Tento manter a calma e resolver o problema",
+      "C) Peço ajuda imediatamente",
+      "D) Tento fugir do problema"
+    ]
+  },
+  {
+    pergunta: "Qual é a sua maior força como colaborador?",
+    opcoes: [
+      "A) Minha comunicação clara e direta",
+      "B) Minha capacidade de organização",
+      "C) Minha habilidade em resolver problemas rapidamente",
+      "D) Meu trabalho em equipe"
+    ]
+  }
 ];
-const resultado = document.getElementById("resultado");
+
+const perguntasSetor = {
+  TI: [
+    {
+      pergunta: "Você encontrou um erro no sistema, o que faz?",
+      opcoes: [
+        "A) Tento corrigir o erro sozinho",
+        "B) Peço ajuda ao time de TI",
+        "C) Comento com meu gerente e espero instruções",
+        "D) Deixo o erro e continuo com meu trabalho"
+      ]
+    },
+    {
+      pergunta: "Você tem uma sugestão de melhoria para o sistema, como você a apresenta?",
+      opcoes: [
+        "A) Apresento ao meu gerente diretamente",
+        "B) Envio um e-mail detalhado com a sugestão",
+        "C) Discutiria com a equipe de TI antes de apresentar",
+        "D) Deixo para alguém mais experiente fazer"
+      ]
+    }
+  ],
+  Marketing: [
+    {
+      pergunta: "Você precisa criar uma campanha rápida. Como começa?",
+      opcoes: [
+        "A) Faço uma pesquisa sobre o público alvo e crio o conteúdo",
+        "B) Peço ideias para a equipe de marketing",
+        "C) Pergunto ao gerente o que ele deseja na campanha",
+        "D) Copio uma campanha que já vi antes"
+      ]
+    },
+    {
+      pergunta: "Como você lida com feedbacks negativos sobre sua campanha?",
+      opcoes: [
+        "A) Tiro lições do feedback e tento melhorar",
+        "B) Fico chateado, mas aceito o feedback",
+        "C) Tento justificar minha escolha de campanha",
+        "D) Ignoro o feedback e sigo em frente"
+      ]
+    }
+  ],
+  RH: [
+    {
+      pergunta: "Como você lida com um colega que não está cumprindo suas tarefas?",
+      opcoes: [
+        "A) Converso com ele para entender o que está acontecendo",
+        "B) Peço para o gerente tomar providências",
+        "C) Tento assumir a tarefa dele",
+        "D) Ignoro e foco nas minhas tarefas"
+      ]
+    },
+    {
+      pergunta: "Você precisa realizar um treinamento, como organiza isso?",
+      opcoes: [
+        "A) Planejo o treinamento e envio para a equipe",
+        "B) Peço para o gerente planejar e organizar tudo",
+        "C) Contrato uma consultoria externa",
+        "D) Deixo para o último momento"
+      ]
+    }
+  ],
+  Logística: [
+    {
+      pergunta: "O estoque está em desordem, o que você faz?",
+      opcoes: [
+        "A) Arrumo o estoque sozinho",
+        "B) Chamo o gerente para organizar",
+        "C) Falo para outra pessoa fazer",
+        "D) Não faço nada"
+      ]
+    },
+    {
+      pergunta: "Você percebeu um erro na entrega, o que faz?",
+      opcoes: [
+        "A) Tento corrigir o erro sozinho",
+        "B) Aviso o gerente imediatamente",
+        "C) Peço ajuda à equipe de logística",
+        "D) Deixo o erro passar"
+      ]
+    }
+  ],
+  Financeiro: [
+    {
+      pergunta: "Como você verifica e organiza relatórios financeiros?",
+      opcoes: [
+        "A) Faço tudo sozinho, revisando todos os números",
+        "B) Peço ajuda a alguém mais experiente",
+        "C) Uso ferramentas de software para me ajudar",
+        "D) Delego a tarefa para outra pessoa"
+      ]
+    },
+    {
+      pergunta: "Você percebeu um erro no lançamento de um valor, o que faz?",
+      opcoes: [
+        "A) Corrijo o erro imediatamente",
+        "B) Informo o gerente sobre o erro",
+        "C) Peço ajuda à equipe financeira",
+        "D) Deixo o erro passar"
+      ]
+    }
+  ]
+};
+
+let respostas = [];
+let perguntaIndex = 0;
 
 nextBtn.addEventListener("click", () => {
-  if (indiceHistoria < historia.length - 1) {
-    storyText.textContent = historia[++indiceHistoria];
+  if (!nomeJogador) {
+    nomeJogador = nomeInput.value.trim();
+    if (nomeJogador === "") {
+      alert("Digite seu nome!");
+      return;
+    }
+    nomeSpan.textContent = nomeJogador;
+    storyText.textContent = storyParts[currentPart].replace("{{nome}}", nomeJogador);
+    currentPart++;
+    nomeInput.style.display = "none";
+  } else if (currentPart < storyParts.length) {
+    storyText.textContent = storyParts[currentPart];
+    currentPart++;
 
-    if (indiceHistoria === historia.length - 1) {
+    if (currentPart === storyParts.length) {
+      nextBtn.textContent = "Começar Jornada";
       setorSelect.style.display = "block";
     }
-  } else {
-    const nome = nomeInput.value.trim();
-    const setor = setorSelect.value;
-
-    if (!nome) return alert("Digite seu nome!");
-    if (!setor) return alert("Selecione um setor!");
-
-    jogador.nome = nome;
-    jogador.setor = setor;
-
-    nomeSpan.textContent = nome;
-    setorSpan.textContent = setor;
-
-    // Montar perguntas finais
-    perguntas = [...perguntasComuns];
-
-    switch (setor) {
-      case "TI": perguntas.push(...perguntasTI); break;
-      case "Marketing": perguntas.push(...perguntasMarketing); break;
-      case "RH": perguntas.push(...perguntasRH); break;
-      case "Logística": perguntas.push(...perguntasLogistica); break;
-      case "Financeiro": perguntas.push(...perguntasFinanceiro); break;
+  } else if (setorSelect.style.display === "block") {
+    setorEscolhido = setorSelect.value;
+    if (setorEscolhido === "") {
+      alert("Escolha um setor para começar a jornada!");
+      return;
     }
-
+    setorSpan.textContent = setorEscolhido;
     popup.style.display = "none";
     jogo.style.display = "block";
-
-    carregarFase();
+    atualizarTela();
   }
 });
 
-function carregarFase() {
-  if (faseAtual >= perguntas.length) {
-    tituloFase.textContent = "Fim da Jornada";
-    descricaoFase.textContent = "Parabéns! Você concluiu sua jornada.";
-    botoes.forEach(btn => btn.style.display = "none");
-    resultado.textContent = `Seus atributos finais: Responsabilidade ${atributos.responsabilidade}, Pontualidade ${atributos.pontualidade}, Comunicação ${atributos.comunicacao}, Desempenho ${atributos.desempenho}`;
-    return;
+function atualizarTela() {
+  const tituloFase = document.getElementById("titulo-fase");
+  const descricaoFase = document.getElementById("descricao-fase");
+  const escolha1 = document.getElementById("escolha1");
+  const escolha2 = document.getElementById("escolha2");
+  const escolha3 = document.getElementById("escolha3");
+  const escolha4 = document.getElementById("escolha4");
+
+  let perguntaAtual;
+  
+  if (perguntaIndex < perguntasComuns.length) {
+    perguntaAtual = perguntasComuns[perguntaIndex]; // Pergunta comum
+  } else {
+    const setorPerguntas = perguntasSetor[setorEscolhido];
+    perguntaAtual = setorPerguntas[perguntaIndex - perguntasComuns.length]; // Pergunta do setor
   }
 
-  const fase = perguntas[faseAtual];
-  tituloFase.textContent = fase.titulo;
-  descricaoFase.textContent = fase.descricao;
-  resultado.textContent = "";
+  tituloFase.textContent = `Desafio no setor de ${setorEscolhido}`;
+  descricaoFase.textContent = perguntaAtual.pergunta;
 
-  fase.opcoes.forEach((op, i) => {
-    botoes[i].textContent = op.texto;
-    botoes[i].style.display = "inline-block";
-  });
+  escolha1.textContent = perguntaAtual.opcoes[0];
+  escolha2.textContent = perguntaAtual.opcoes[1];
+  escolha3.textContent = perguntaAtual.opcoes[2];
+  escolha4.textContent = perguntaAtual.opcoes[3];
+
+  // Definindo as opções de respostas baseadas na pergunta
+  escolha1.onclick = () => tomarDecisao(0);
+  escolha2.onclick = () => tomarDecisao(1);
+  escolha3.onclick = () => tomarDecisao(2);
+  escolha4.onclick = () => tomarDecisao(3);
 }
 
-function escolher(indice) {
-  const op = perguntas[faseAtual].opcoes[indice];
-  for (let key in op.efeitos) {
-    atributos[key] += op.efeitos[key];
+function tomarDecisao(escolha) {
+  const resultado = document.getElementById("resultado");
+  const resp = parseInt(document.getElementById("resp").textContent);
+
+  if (escolha === 0) {
+    resultado.textContent = "Você tomou a decisão certa. +10 responsabilidade!";
+    document.getElementById("resp").textContent = resp + 10;
+  } else if (escolha === 1) {
+    resultado.textContent = "Essa escolha teve consequências negativas. -5 responsabilidade.";
+    document.getElementById("resp").textContent = resp - 5;
+  } else if (escolha === 2) {
+    resultado.textContent = "Você tomou a decisão certa. +5 responsabilidade!";
+    document.getElementById("resp").textContent = resp + 5;
+  } else if (escolha === 3) {
+    resultado.textContent = "Essa escolha teve consequências... -10 responsabilidade.";
+    document.getElementById("resp").textContent = resp - 10;
   }
 
-  atualizarAtributos();
-  resultado.textContent = "Você escolheu: " + op.texto;
-  faseAtual++;
-  setTimeout(carregarFase, 1000);
-}
 
-function atualizarAtributos() {
-  respSpan.textContent = atributos.responsabilidade;
-  pontSpan.textContent = atributos.pontualidade;
-  comSpan.textContent = atributos.comunicacao;
-  desemSpan.textContent = atributos.desempenho;
+
+  
+  perguntaIndex++;
+  if (perguntaIndex < perguntasComuns.length + perguntasSetor[setorEscolhido].length) {
+    atualizarTela();
+  } else {
+   
+    
+
+    resultado.textContent = "Parabéns, você completou o desafio!";
+  }
 }
